@@ -162,13 +162,14 @@ android.permission.WRITE_SMS	编写短信	允许编写短信
 
         </activity>
         <activity android:name=".base.TakePhotoActivity">
+        </activity>
+        <activity android:name=".movedrop.MoveDropViewNewActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.ol.xow.provider"

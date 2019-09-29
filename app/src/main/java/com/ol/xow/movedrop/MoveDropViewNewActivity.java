@@ -1,0 +1,77 @@
+package com.ol.xow.movedrop;
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.ol.xow.R;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * 拖动View 删除
+ */
+public class MoveDropViewNewActivity extends AppCompatActivity implements MoveDropViewLisener {
+
+    private static final String TAG = "MoveDropViewNewActivity";
+    private MoveDropAdapter moveDropAdapter;
+    private RecyclerView recyclerView;
+    private List<String> list;
+    private TextView tvButton;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_move_drop);
+
+        list = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            list.add("我是第" + i + "个被拖拽的");
+        }
+
+        moveDropAdapter = new MoveDropAdapter(this, list);
+        recyclerView = findViewById(R.id.recycler_view);
+        recyclerView.setAdapter(moveDropAdapter);
+        moveDropAdapter.notifyDataSetChanged();
+        tvButton = findViewById(R.id.tv_button);
+
+        RecycleViewMoveDorp recycleViewMoveDorp = new RecycleViewMoveDorp(recyclerView, list, tvButton);
+        recycleViewMoveDorp.setMoveDropViewLisener(this);
+    }
+
+
+    @Override
+    public void onNomalView() {
+        Log.d(TAG, "onNomalView");
+        tvButton.setBackgroundColor(Color.WHITE);
+        tvButton.setTextColor(Color.GREEN);
+    }
+
+    @Override
+    public void onMoveView(boolean isTouchPointInView) {
+        Log.d(TAG, "onMoveView");
+        if(isTouchPointInView){
+            tvButton.setBackgroundColor(Color.RED);
+            tvButton.setTextColor(Color.GRAY);
+        }else{
+            tvButton.setBackgroundColor(Color.RED);
+            tvButton.setTextColor(Color.WHITE);
+        }
+    }
+
+    @Override
+    public void removeView(int position) {
+        tvButton.setBackgroundColor(Color.WHITE);
+        tvButton.setTextColor(Color.BLUE);
+
+        Log.d(TAG, "removeView" + ">" + position);
+        list.remove(position);
+        recyclerView.getAdapter().notifyDataSetChanged();
+    }
+}
