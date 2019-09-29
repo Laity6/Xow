@@ -163,7 +163,7 @@ android.permission.WRITE_SMS	编写短信	允许编写短信
         </activity>
         <activity android:name=".base.TakePhotoActivity">
         </activity>
-        <activity android:name=".movedrop.MoveDropViewNewActivity">
+        <activity android:name=".movedrop.OnLongPressMoveNewActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

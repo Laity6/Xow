@@ -9,16 +9,28 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.Collections;
 import java.util.List;
 
-public class RecycleViewMoveDorp implements View.OnTouchListener {
+/**
+ * 移动拖拽ItemView 到指定区域操作
+ *
+ * @author xulin
+ * @email xllovey@163.com
+ */
+public class RecycleViewLongPressMove implements View.OnTouchListener {
 
-    private RecyclerView recyclerView;
-    private List<?> list;
-    private int positionTag;
     private MoveLayoutManager moveLayoutManager;
+    private List<?> list;
     private View removeView;
+    private int positionTag;
+    private boolean isLongPress;
 
-    public RecycleViewMoveDorp(RecyclerView recyclerView, List<?> list, View removeView) {
-        this.recyclerView = recyclerView;
+    /**
+     * 移动拖拽ItemView 到指定区域操作
+     *
+     * @param recyclerView 当前集合RecyclerView
+     * @param list         当前Adater的数据源 移动时排序使用
+     * @param removeView   指定的操作View区域
+     */
+    public RecycleViewLongPressMove(RecyclerView recyclerView, List<?> list, View removeView) {
         this.list = list;
         this.removeView = removeView;
 
@@ -28,7 +40,7 @@ public class RecycleViewMoveDorp implements View.OnTouchListener {
         recyclerView.setOnTouchListener(this);
     }
 
-    private boolean isLongPress;
+
     //为RecycleView绑定触摸事件
     ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
 
@@ -36,8 +48,7 @@ public class RecycleViewMoveDorp implements View.OnTouchListener {
         public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
             //首先回调的方法 返回int表示是否监听该方向
             int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END;//拖拽
-            int swipeFlags = 0;//侧滑删除
-            return makeMovementFlags(dragFlags, swipeFlags);
+            return makeMovementFlags(dragFlags, 0);
         }
 
         @Override
@@ -66,39 +77,39 @@ public class RecycleViewMoveDorp implements View.OnTouchListener {
 
         @Override
         public boolean isLongPressDragEnabled() {
-            //todo 长按了Item事件，显示删除组件
             moveLayoutManager.setScrollEnabled(false);//禁止滑动
             isLongPress = true;
-            moveDropViewLisener.onMoveView(false);
+            onLongPressMoveLisener.onMoveView(false);
             return true;
         }
     });
 
     @Override
     public boolean onTouch(View view, MotionEvent event) {
+        if (onLongPressMoveLisener == null) {
+            new IllegalArgumentException("请在 RecycleViewLongPressMove 调用 setOnLongPressMoveLisener !!！");
+            return true;
+        }
         float xDown = event.getX();
         float yDown = event.getY();
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {// 按下
-
-        } else if (event.getAction() == MotionEvent.ACTION_UP) {// 抬起
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+        } else if (event.getAction() == MotionEvent.ACTION_UP) {
             if (isLongPress) {
                 if (isTouchPointInView(removeView, xDown, yDown)) {
-                    moveDropViewLisener.removeView(positionTag);
+                    onLongPressMoveLisener.onOperation(positionTag);
                 }
             }
-            moveDropViewLisener.onNomalView();
+            onLongPressMoveLisener.onNomalView();
             isLongPress = false;
-            moveLayoutManager.setScrollEnabled(true);//开启滑动
-        } else if (event.getAction() == MotionEvent.ACTION_MOVE) // 移动
-        {
+            moveLayoutManager.setScrollEnabled(true);
+        } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
             if (isLongPress) {
-                moveDropViewLisener.onMoveView(isTouchPointInView(removeView, xDown, yDown));
+                onLongPressMoveLisener.onMoveView(isTouchPointInView(removeView, xDown, yDown));
             }
         }
         return false;
     }
 
-    //(x,y)是否在view的区域内
     private boolean isTouchPointInView(View view, float x, float y) {
         if (view == null) {
             return false;
@@ -117,10 +128,16 @@ public class RecycleViewMoveDorp implements View.OnTouchListener {
         return false;
     }
 
-    private MoveDropViewLisener moveDropViewLisener;
+    private OnLongPressMoveLisener onLongPressMoveLisener;
 
-    public void setMoveDropViewLisener(MoveDropViewLisener moveDropViewLisener) {
-        this.moveDropViewLisener = moveDropViewLisener;
+    public void setOnLongPressMoveLisener(OnLongPressMoveLisener onLongPressMoveLisener) {
+        this.onLongPressMoveLisener = onLongPressMoveLisener;
+    }
+
+    public interface OnLongPressMoveLisener {
+        void onNomalView();//正常
+        void onMoveView(boolean isTouchPointInView);//移动
+        void onOperation(int position);//操作
     }
 
 }

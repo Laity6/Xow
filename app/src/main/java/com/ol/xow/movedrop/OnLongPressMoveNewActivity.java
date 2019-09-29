@@ -17,9 +17,9 @@ import java.util.List;
 /**
  * 拖动View 删除
  */
-public class MoveDropViewNewActivity extends AppCompatActivity implements MoveDropViewLisener {
+public class OnLongPressMoveNewActivity extends AppCompatActivity implements RecycleViewLongPressMove.OnLongPressMoveLisener {
 
-    private static final String TAG = "MoveDropViewNewActivity";
+    private static final String TAG = "OnLongPressMoveNewActivity";
     private MoveDropAdapter moveDropAdapter;
     private RecyclerView recyclerView;
     private List<String> list;
@@ -41,8 +41,8 @@ public class MoveDropViewNewActivity extends AppCompatActivity implements MoveDr
         moveDropAdapter.notifyDataSetChanged();
         tvButton = findViewById(R.id.tv_button);
 
-        RecycleViewMoveDorp recycleViewMoveDorp = new RecycleViewMoveDorp(recyclerView, list, tvButton);
-        recycleViewMoveDorp.setMoveDropViewLisener(this);
+        RecycleViewLongPressMove recycleViewLongPressMove = new RecycleViewLongPressMove(recyclerView, list, tvButton);
+        recycleViewLongPressMove.setOnLongPressMoveLisener(this);
     }
 
 
@@ -66,11 +66,11 @@ public class MoveDropViewNewActivity extends AppCompatActivity implements MoveDr
     }
 
     @Override
-    public void removeView(int position) {
+    public void onOperation(int position) {
         tvButton.setBackgroundColor(Color.WHITE);
         tvButton.setTextColor(Color.BLUE);
 
-        Log.d(TAG, "removeView" + ">" + position);
+        Log.d(TAG, "onOperation" + ">" + position);
         list.remove(position);
         recyclerView.getAdapter().notifyDataSetChanged();
     }
